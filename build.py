@@ -39,7 +39,7 @@ def get_ci_vars():
 
     reponame_t = os.getenv("TRAVIS_REPO_SLUG","")
     repobranch_t = os.getenv("TRAVIS_BRANCH","")
-
+    print(reponame_a)
     username, _ = reponame_a.split("/") if reponame_a else reponame_t.split("/")
     channel, version = repobranch_a.split("/") if repobranch_a else repobranch_t.split("/")
     return username, channel, version
