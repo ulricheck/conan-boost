@@ -1,25 +1,84 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from conan.packager import ConanMultiPackager
-import copy
-import platform
 import os
+import re
+import platform
+
+
+def get_value_from_recipe(search_string):
+    with open("conanfile.py", "r") as conanfile:
+        contents = conanfile.read()
+        result = re.search(search_string, contents)
+    return result
+
+
+def get_name_from_recipe():
+    return get_value_from_recipe(r'''name\s*=\s*["'](\S*)["']''').groups()[0]
+
+
+def get_version_from_recipe():
+    return get_value_from_recipe(r'''version\s*=\s*["'](\S*)["']''').groups()[0]
+
+
+def get_default_vars():
+    username = os.getenv("CONAN_USERNAME", "camp")
+    channel = os.getenv("CONAN_CHANNEL", "stable")
+    version = get_version_from_recipe()
+    return username, channel, version
+
+
+def is_ci_running():
+    return os.getenv("APPVEYOR_REPO_NAME", "") or os.getenv("TRAVIS_REPO_SLUG", "")
+
+
+def get_ci_vars():
+    reponame_a = os.getenv("APPVEYOR_REPO_NAME","")
+    repobranch_a = os.getenv("APPVEYOR_REPO_BRANCH","")
+
+    reponame_t = os.getenv("TRAVIS_REPO_SLUG","")
+    repobranch_t = os.getenv("TRAVIS_BRANCH","")
+
+    username, _ = reponame_a.split("/") if reponame_a else reponame_t.split("/")
+    channel, version = repobranch_a.split("/") if repobranch_a else repobranch_t.split("/")
+    return username, channel, version
+
+
+def get_env_vars():
+    return get_ci_vars() if is_ci_running() else get_default_vars()
+
+
+def get_os():
+    return platform.system().replace("Darwin", "Macos")
 
 
 if __name__ == "__main__":
-    builder = ConanMultiPackager()
-    builder.add_common_builds(shared_option_name="Boost:shared", pure_c=False)
-    if os.getenv("CONAN_VISUAL_VERSIONS") == "15":
-        # There is an unknown problem in visual 2015 trying to use 2017 to do something with b2
-        new_build = copy.deepcopy(builder.builds)[-1]
-        new_build.options["Boost:header_only"] = True
-        builder.add(*new_build)
+    name = get_name_from_recipe()
+    username, channel, version = get_env_vars()
+    reference = "{0}/{1}".format(name, version)
+    upload = "https://api.bintray.com/conan/{0}/public-conan".format(username)
 
-    if platform.system() == "Linux":
+    remotes = ", ".join((
+        "https://api.bintray.com/conan/conan-community/conan",
+        "https://api.bintray.com/conan/tum-ubitrack/public-conan"))
+
+    builder = ConanMultiPackager(
+        username=username,
+        channel=channel,
+        reference=reference,
+        upload=upload,
+        remotes=remotes,
+        upload_only_when_stable=True,
+        stable_branch_pattern="stable/*")
+
+    builder.add_common_builds(shared_option_name=name + ":shared")
+
+    if platform.system() == "Windows":
         filtered_builds = []
-        for settings, options, env_vars, build_requires in builder.builds:
-            filtered_builds.append([settings, options])
-            new_options = copy.copy(options)
-            new_options["Boost:fPIC"] = True
-            filtered_builds.append([settings, new_options, env_vars, build_requires])
+        for build in builder.builds:
+            if build.settings["compiler"] != "Visual Studio" or build.options[name + ":shared"]:
+                filtered_builds.append(build)
         builder.builds = filtered_builds
-    builder.run()
 
+    builder.run()
