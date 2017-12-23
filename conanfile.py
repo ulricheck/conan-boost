@@ -109,9 +109,9 @@ class BoostConan(ConanFile):
 
         if not self.options.without_iostreams and not self.options.header_only:
             if self.settings.os == "Linux" or self.settings.os == "Macos":
-                self.requires("bzip2/1.0.6@camp/stable")
+                self.requires("bzip2/1.0.6@ulricheck/stable")
                 self.options["bzip2/1.0.6"].shared = self.options.shared
-            self.requires("zlib/1.2.11@camp/stable")
+            self.requires("zlib/1.2.11@ulricheck/stable")
             self.options["zlib"].shared = self.options.shared
 
     def package_id(self):
