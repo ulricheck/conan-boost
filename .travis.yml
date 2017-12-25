@@ -3,9 +3,9 @@ env:
    global:
      - CONAN_REFERENCE: "Boost/1.64.0"
      - CONAN_USERNAME: "ulricheck"
-     - CONAN_LOGIN_USERNAME: "ulricheck"
      - CONAN_CHANNEL: "stable"
      - CONAN_UPLOAD: "https://api.bintray.com/conan/tum-ubitrack/public-conan"
+     - CONAN_REMOTES: "https://api.bintray.com/conan/tum-ubitrack/public-conan"
      - CONAN_STABLE_BRANCH_PATTERN: "release/*"
      - CONAN_TOTAL_PAGES: 8
      - CONAN_UPLOAD_ONLY_WHEN_STABLE: 1 # Will only upload when the branch matches "release/*"
