@@ -108,9 +108,9 @@ class BoostConan(ConanFile):
             self.options.remove("python")
 
         if not self.options.without_iostreams and not self.options.header_only:
-            if self.settings.os == "Linux" or self.settings.os == "Macos":
-                self.requires("bzip2/1.0.6@ulricheck/stable")
-                self.options["bzip2"].shared = self.options.shared
+            # if self.settings.os == "Linux" or self.settings.os == "Macos":
+            #     self.requires("bzip2/1.0.6@ulricheck/stable")
+            #     self.options["bzip2"].shared = self.options.shared
             self.requires("zlib/1.2.11@ulricheck/stable")
             self.options["zlib"].shared = self.options.shared
 
@@ -270,11 +270,11 @@ class BoostConan(ConanFile):
             self.requires["zlib"].conan_reference.version,
             self.deps_cpp_info["zlib"].include_paths[0].replace('\\', '/'),
             self.deps_cpp_info["zlib"].lib_paths[0].replace('\\', '/'))
-        if self.settings.os == "Linux" or self.settings.os == "Macos":
-            contents += "\nusing bzip2 : %s : <include>%s <search>%s ;" % (
-                self.requires["bzip2"].conan_reference.version,
-                self.deps_cpp_info["bzip2"].include_paths[0].replace('\\', '/'),
-                self.deps_cpp_info["bzip2"].lib_paths[0].replace('\\', '/'))
+        # if self.settings.os == "Linux" or self.settings.os == "Macos":
+        #     contents += "\nusing bzip2 : %s : <include>%s <search>%s ;" % (
+        #         self.requires["bzip2"].conan_reference.version,
+        #         self.deps_cpp_info["bzip2"].include_paths[0].replace('\\', '/'),
+        #         self.deps_cpp_info["bzip2"].lib_paths[0].replace('\\', '/'))
 
         filename = "%s/project-config.jam" % self.FOLDER_NAME
         tools.save(filename, tools.load(filename) + contents)
