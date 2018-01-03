@@ -319,7 +319,9 @@ class BoostConan(ConanFile):
         self.output.info("LIBRARIES: %s" % self.cpp_info.libs)
 
         if not self.options.header_only and self.options.shared:
-            self.cpp_info.defines.append("BOOST_ALL_DYN_LINK")
+            # this breaks our assumptions in ubitrack .. so disable it for windows compilers
+            if not self.settings.compiler == "Visual Studio":
+                self.cpp_info.defines.append("BOOST_ALL_DYN_LINK")
         else:
             self.cpp_info.defines.append("BOOST_USE_STATIC_LIBS")
 
