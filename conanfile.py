@@ -335,7 +335,7 @@ class BoostConan(ConanFile):
                 self.cpp_info.defines.extend(["BOOST_ALL_NO_LIB"])
 
     def _msvc_version(self):
-        if self.settings.compiler.version == "15":
-            return "14.1"
-        else:
-            return "%s.0" % self.settings.compiler.version
+        # if self.settings.compiler.version == "15":
+        #     return "14.1"
+        # else:
+        return "%s" % self.settings.compiler.version
