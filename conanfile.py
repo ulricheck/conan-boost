@@ -313,7 +313,7 @@ class BoostConan(ConanFile):
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
 
-        self.env_info['BOOST_ROOT'] = self.cpp_info.rootpath
+        self.env_info.BOOST_ROOT = self.cpp_info.rootpath
 
         if self.options.without_test: # remove boost_unit_test_framework
             self.cpp_info.libs = [lib for lib in self.cpp_info.libs if "unit_test" not in lib]
