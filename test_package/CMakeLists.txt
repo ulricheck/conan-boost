@@ -5,6 +5,7 @@ set(Boost_DEBUG 1)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 
 CONAN_BASIC_SETUP()
+set(BOOST_ROOT "${CONAN_BOOST_ROOT}")
 
 IF(NOT HEADER_ONLY)
 	if(WITH_PYTHON)
