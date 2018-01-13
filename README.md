@@ -3,21 +3,18 @@
 
 [Conan.io](https://conan.io) package for Boost library
 
-
-The packages generated with this **conanfile** can be found on [bintray](https://bintray.com/tum-ubitrack/public-conan).
-
 ## Reuse the packages
 
 ### Basic setup
 
-    $ conan install Boost/1.64.0@camp/stable
+    $ conan install Boost/1.64.0@camposs/stable
 
 ### Project setup
 
 If you handle multiple dependencies in your project is better to add a *conanfile.txt*
 
     [requires]
-    Boost/1.64.0@camp/stable
+    Boost/1.64.0@camposs/stable
 
     [options]
     Boost:shared=true # false

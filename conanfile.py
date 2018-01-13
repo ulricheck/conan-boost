@@ -81,7 +81,7 @@ class BoostConan(ConanFile):
         "without_type_erasure=False", \
         "without_wave=False"
 
-    url="https://gitlab.lrz.de/campar-conan/ubitrack/conan-boost"
+    url="https://github.com/ulricheck/conan-boost"
     # exports = ["FindBoost.cmake", "OriginalFindBoost*"]
     license="Boost Software License - Version 1.0. http://www.boost.org/LICENSE_1_0.txt"
     short_paths = True
@@ -111,7 +111,7 @@ class BoostConan(ConanFile):
             # if self.settings.os == "Linux" or self.settings.os == "Macos":
             #     self.requires("bzip2/1.0.6@ulricheck/stable")
             #     self.options["bzip2"].shared = self.options.shared
-            self.requires("zlib/1.2.11@ulricheck/stable")
+            self.requires("zlib/1.2.11@camposs/stable")
             self.options["zlib"].shared = self.options.shared
 
     def package_id(self):
