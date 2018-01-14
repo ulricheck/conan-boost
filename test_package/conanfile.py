@@ -18,7 +18,7 @@ class DefaultNameConan(ConanFile):
         cmake = CMake(self)
         if self.options["Boost"].header_only:
             cmake.definitions["HEADER_ONLY"] = "TRUE"
-        if self.options["Boost"].python:
+        if not self.options["Boost"].without_python:
             cmake.definitions["WITH_PYTHON"] = "TRUE"
         cmake.configure()
         cmake.build()
@@ -32,7 +32,7 @@ class DefaultNameConan(ConanFile):
         self.run("cd bin && .%slambda < %s" % (os.sep, data_file))
         if not self.options["Boost"].header_only:
             self.run("cd bin && .%sregex_exe < %s" % (os.sep, data_file))
-            if self.options["Boost"].python:
+            if not self.options["Boost"].without_python:
                 os.chdir("bin")
                 sys.path.append(".")
                 import hello_ext
