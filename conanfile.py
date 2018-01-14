@@ -118,7 +118,7 @@ class BoostConan(ConanFile):
             self.options["zlib"].shared = self.options.shared
 
     def system_requirements(self):
-        if self.options.enable_tracing:
+        if not self.options.without_python:
             if os_info.is_linux:
                 if os_info.with_apt:
                     installer = SystemPackageTool()
