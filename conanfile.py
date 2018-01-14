@@ -144,7 +144,7 @@ class BoostConan(ConanFile):
 
         command = "b2" if self.settings.os == "Windows" else "./b2"
 
-        full_command = "cd %s && %s %s -j%s --abbreviate-paths %s -d2" % (
+        full_command = "cd %s && %s %s -j%s --abbreviate-paths -d2" % (
             self.FOLDER_NAME,
             command,
             b2_flags,
