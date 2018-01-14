@@ -1,6 +1,7 @@
 from conans import ConanFile
 from conans import tools
 import os, sys
+import sysconfig
 
 
 class BoostConan(ConanFile):
@@ -14,8 +15,8 @@ class BoostConan(ConanFile):
         "shared": [True, False],
         "header_only": [True, False],
         "fPIC": [True, False],
-        "python": [True, False],  # Note: this variable does not have the 'without_' prefix to keep
-        # the old shas
+        "python": "ANY",
+        "without_python": [True, False],
         "without_atomic": [True, False],
         "without_chrono": [True, False],
         "without_container": [True, False],
@@ -50,7 +51,8 @@ class BoostConan(ConanFile):
     default_options = "shared=False", \
         "header_only=False", \
         "fPIC=False", \
-        "python=False", \
+        "python=python", \
+        "without_python=False", \
         "without_atomic=False", \
         "without_chrono=False", \
         "without_container=False", \
@@ -142,13 +144,11 @@ class BoostConan(ConanFile):
 
         command = "b2" if self.settings.os == "Windows" else "./b2"
 
-        without_python = "--without-python" if not self.options.python else ""
         full_command = "cd %s && %s %s -j%s --abbreviate-paths %s -d2" % (
             self.FOLDER_NAME,
             command,
             b2_flags,
-            tools.cpu_count(),
-            without_python)  # -d2 is to print more debug info and avoid travis timing out without output
+            tools.cpu_count())  # -d2 is to print more debug info and avoid travis timing out without output
         
         if self.settings.os == "Windows" and self.settings.compiler == "Visual Studio":
             full_command = "%s && %s" % (tools.vcvars_command(self.settings), full_command)
@@ -197,6 +197,7 @@ class BoostConan(ConanFile):
             "--without-metaparse": self.options.without_metaparse,
             "--without-mpi": self.options.without_mpi,
             "--without-program_options": self.options.without_program_options,
+            "--without-python": self.options.without_python,
             "--without-random": self.options.without_random,
             "--without-regex": self.options.without_regex,
             "--without-serialization": self.options.without_serialization,
@@ -276,6 +277,10 @@ class BoostConan(ConanFile):
         #         self.deps_cpp_info["bzip2"].include_paths[0].replace('\\', '/'),
         #         self.deps_cpp_info["bzip2"].lib_paths[0].replace('\\', '/'))
 
+        if not self.options.without_python:
+            contents += "using python : %s : %s : %s : %s ;" % (
+                self.b2_python_version, self.b2_python_exec, self.b2_python_include, self.b2_python_lib)
+
         filename = "%s/project-config.jam" % self.FOLDER_NAME
         tools.save(filename, tools.load(filename) + contents)
 
@@ -328,7 +333,7 @@ class BoostConan(ConanFile):
             self.cpp_info.defines.append("BOOST_USE_STATIC_LIBS")
 
         if not self.options.header_only:
-            if self.options.python:
+            if not self.options.without_python:
                 if not self.options.shared:
                     self.cpp_info.defines.append("BOOST_PYTHON_STATIC_LIB")
 
@@ -341,3 +346,46 @@ class BoostConan(ConanFile):
             return "14.1"
         else:
             return "%s.0" % self.settings.compiler.version
+
+    @property
+    def b2_python_exec(self):
+        try:
+            pyexec = str(self.conanfile.options.python)
+            output = StringIO()
+            self.conanfile.run('{0} -c "import sys; print(sys.executable)"'.format(pyexec), output=output)
+            return '"'+output.getvalue().strip().replace("\\","/")+'"'
+        except:
+            return ""
+    
+    _python_version = ""
+    @property
+    def b2_python_version(self):
+        cmd = "from sys import *; print('%d.%d' % (version_info[0],version_info[1]))"
+        self._python_version = self._python_version or self.run_python_command(cmd)
+        return self._python_version
+      
+    @property
+    def b2_python_include(self):
+        pyinclude = self.get_python_path("include")
+        if not os.path.exists(os.path.join(pyinclude, 'pyconfig.h')):
+            return ""
+        else:
+            return pyinclude.replace('\\', '/')
+    
+    @property
+    def b2_python_lib(self):
+        stdlib_dir = os.path.dirname(self.get_python_path("stdlib")).replace('\\', '/')
+        return stdlib_dir
+        
+    def get_python_path(self, dir_name):
+        cmd = "import sysconfig; print(sysconfig.get_path('{0}'))".format(dir_name)
+        return self.run_python_command(cmd)    
+                  
+    def run_python_command(self, cmd):
+        pyexec = self.b2_python_exec
+        if pyexec:
+            output = StringIO()
+            self.conanfile.run('{0} -c "{1}"'.format(pyexec, cmd), output=output)
+            return output.getvalue().strip()
+        else:
+            return ""
