@@ -3,6 +3,7 @@ from conans import tools
 from conans.tools import os_info, SystemPackageTool
 import os, sys
 import sysconfig
+from io import StringIO
 
 
 class BoostConan(ConanFile):
@@ -374,9 +375,9 @@ class BoostConan(ConanFile):
     @property
     def b2_python_exec(self):
         try:
-            pyexec = str(self.conanfile.options.python)
+            pyexec = str(self.options.python)
             output = StringIO()
-            self.conanfile.run('{0} -c "import sys; print(sys.executable)"'.format(pyexec), output=output)
+            self.run('{0} -c "import sys; print(sys.executable)"'.format(pyexec), output=output)
             return '"'+output.getvalue().strip().replace("\\","/")+'"'
         except:
             return ""
@@ -409,7 +410,7 @@ class BoostConan(ConanFile):
         pyexec = self.b2_python_exec
         if pyexec:
             output = StringIO()
-            self.conanfile.run('{0} -c "{1}"'.format(pyexec, cmd), output=output)
+            self.run('{0} -c "{1}"'.format(pyexec, cmd), output=output)
             return output.getvalue().strip()
         else:
             return ""
