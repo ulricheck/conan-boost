@@ -303,8 +303,9 @@ class BoostConan(ConanFile):
         #         self.deps_cpp_info["bzip2"].lib_paths[0].replace('\\', '/'))
 
         if not self.options.without_python:
-            contents += "using python : %s : %s : %s : %s ;" % (
+            contents += "\nusing python : %s : %s : %s : %s ;" % (
                 self.b2_python_version, self.b2_python_exec, self.b2_python_include, self.b2_python_lib)
+
 
         filename = "%s/project-config.jam" % self.FOLDER_NAME
         tools.save(filename, tools.load(filename) + contents)
@@ -399,8 +400,11 @@ class BoostConan(ConanFile):
     
     @property
     def b2_python_lib(self):
-        stdlib_dir = os.path.dirname(self.get_python_path("stdlib")).replace('\\', '/')
-        return stdlib_dir
+        stdlib_dir = os.path.dirname(self.get_python_path("stdlib"))
+        if self.settings.os == "Windows":
+            if os.path.isdir(os.path.join(stdlib_dir, "libs")):
+                stdlib_dir = os.path.join(stdlib_dir, "libs")
+        return stdlib_dir.replace('\\', '/')
         
     def get_python_path(self, dir_name):
         cmd = "import sysconfig; print(sysconfig.get_path('{0}'))".format(dir_name)
