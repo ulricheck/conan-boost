@@ -8,7 +8,7 @@ from io import StringIO
 
 class BoostConan(ConanFile):
     name = "Boost"
-    version = "1.64.0"
+    version = "1.65.1"
     settings = "os", "arch", "compiler", "build_type"
     FOLDER_NAME = "boost_%s" % version.replace(".", "_")
     # The current python option requires the package to be built locally, to find default Python
