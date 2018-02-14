@@ -153,10 +153,9 @@ class BoostConan(ConanFile):
         tools.unzip(zip_name)
         os.unlink(zip_name)
 
-        #patch boost on windows:
-        if self.settings.os == "Windows":
-            self.output.info("Apply patch: fix_zlib_library_path.diff")
-            patch(base_path=os.path.join(self.build_folder, "sources","tools","build"), patch_file=os.path.join(self.source_folder, "patches", "fix_zlib_library_path.diff"), strip=1)
+        #patch boost to compile with zlib
+        self.output.info("Apply patch: fix_zlib_library_path.diff")
+        patch(base_path=os.path.join(self.build_folder, "sources","tools","build"), patch_file=os.path.join(self.source_folder, "patches", "fix_zlib_library_path.diff"), strip=1)
 
     def build(self):
         if self.options.header_only:
