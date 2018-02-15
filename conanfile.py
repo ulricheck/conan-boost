@@ -5,6 +5,12 @@ import os, sys
 import sysconfig
 from io import StringIO
 
+def remove_duplicates(items):
+    newlist = []
+    for item in items:
+       if item not in newlist:
+           newlist.append(item)
+    return newlist
 
 class BoostConan(ConanFile):
     name = "Boost"
@@ -156,7 +162,9 @@ class BoostConan(ConanFile):
 
         #patch boost to compile with zlib
         self.output.info("Apply patch: fix_zlib_library_path.diff")
-        patch(base_path=os.path.join(self.source_folder, "sources","tools","build"), patch_file=os.path.join(self.source_folder, "patches", "fix_zlib_library_path.diff"), strip=1)
+        patch(base_path=os.path.join(self.FOLDER_NAME, "tools", "build"), 
+            patch_file=os.path.join("patches", "fix_zlib_library_path.diff"), 
+            strip=1)
 
     def build(self):
         if self.options.header_only:
@@ -348,12 +356,25 @@ class BoostConan(ConanFile):
                     os.rename(original, new)
 
     def package_info(self):
-        self.cpp_info.libs = tools.collect_libs(self)
-
         self.env_info.BOOST_ROOT = self.cpp_info.rootpath
+        cpp_libs = remove_duplicates(tools.collect_libs(self))
 
         if self.options.without_test: # remove boost_unit_test_framework
-            self.cpp_info.libs = [lib for lib in self.cpp_info.libs if "unit_test" not in lib]
+            cpp_libs = [lib for lib in cpp_libs if "unit_test" not in lib]
+        else:
+            cpp_libs = [lib for lib in cpp_libs if "test_exec_monitor" not in lib]
+
+        if not self.options.without_python:
+            py_version = int(self.b2_python_version.split('.')[0])
+            filter_boost_python_libs = sorted([lib for lib in cpp_libs if ("python" in lib) or ("numpy" in lib)])
+            if py_version == 3:
+                filter_boost_python_libs = [lib for lib in filter_boost_python_libs if "3" not in lib]
+            else:
+                filter_boost_python_libs = [lib for lib in filter_boost_python_libs if "3" in lib]
+
+            cpp_libs = [lib for lib in cpp_libs if lib not in filter_boost_python_libs]
+
+        self.cpp_info.libs = cpp_libs
 
         self.output.info("LIBRARIES: %s" % self.cpp_info.libs)
 
