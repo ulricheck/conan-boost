@@ -54,7 +54,7 @@ class BoostConan(ConanFile):
         "header_only=False", \
         "fPIC=False", \
         "python=python", \
-        "without_python=False", \
+        "without_python=True", \
         "without_atomic=False", \
         "without_chrono=False", \
         "without_container=False", \
