@@ -67,9 +67,9 @@ if __name__ == "__main__":
 
     if platform.system() == "Windows":
         filtered_builds = []
-        for settings, options, env_vars, build_requires in builder.items:
+        for settings, options, env_vars, build_requires, reference in builder.items:
             if settings["compiler"] != "Visual Studio" or options[name + ":shared"]:
-                filtered_builds.append([settings, options, env_vars, build_requires])
+                filtered_builds.append([settings, options, env_vars, build_requires, reference])
         builder.builds = filtered_builds
 
     builder.run()
