@@ -5,6 +5,13 @@ import os, sys
 import sysconfig
 from io import StringIO
 
+# From from *1 (see below, b2 --show-libraries), also ordered following linkage order
+# see https://github.com/Kitware/CMake/blob/master/Modules/FindBoost.cmake to know the order
+lib_list = ['math', 'wave', 'container', 'exception', 'graph', 'iostreams', 'locale', 'log',
+            'program_options', 'random', 'regex', 'mpi', 'serialization', 'signals',
+            'coroutine', 'fiber', 'context', 'timer', 'thread', 'chrono', 'date_time',
+            'atomic', 'filesystem', 'system', 'graph_parallel', 'python',
+            'stacktrace', 'test', 'type_erasure']
 
 class BoostConan(ConanFile):
     name = "Boost"
@@ -343,14 +350,35 @@ class BoostConan(ConanFile):
                     os.rename(original, new)
 
     def package_info(self):
-        self.cpp_info.libs = tools.collect_libs(self)
 
-        self.env_info.BOOST_ROOT = self.cpp_info.rootpath
+        gen_libs = tools.collect_libs(self)
 
-        if self.options.without_test: # remove boost_unit_test_framework
+        # List of lists, so if more than one matches the lib like serialization and wserialization
+        # both will be added to the list
+        ordered_libs = [[] for _ in range(len(lib_list))]
+
+        # The order is important, reorder following the lib_list order
+        missing_order_info = []
+        for real_lib_name in gen_libs:
+            for pos, alib in enumerate(lib_list):
+                if os.path.splitext(real_lib_name)[0].split("-")[0].endswith(alib):
+                    ordered_libs[pos].append(real_lib_name)
+                    break
+            else:
+                # self.output.info("Missing in order: %s" % real_lib_name)
+                if "_exec_monitor" not in real_lib_name:  # https://github.com/bincrafters/community/issues/94
+                    missing_order_info.append(real_lib_name)  # Assume they do not depend on other
+
+        # Flat the list and append the missing order
+        self.cpp_info.libs = [item for sublist in ordered_libs
+                                      for item in sublist if sublist] + missing_order_info
+
+        if self.options.without_test:  # remove boost_unit_test_framework
             self.cpp_info.libs = [lib for lib in self.cpp_info.libs if "unit_test" not in lib]
 
         self.output.info("LIBRARIES: %s" % self.cpp_info.libs)
+
+        self.env_info.BOOST_ROOT = self.cpp_info.rootpath
 
         if not self.options.header_only and self.options.shared:
             # this breaks our assumptions in ubitrack .. so disable it for windows compilers
