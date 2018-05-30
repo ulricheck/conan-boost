@@ -100,4 +100,5 @@ if __name__ == "__main__":
                 filtered_builds.append([settings, options, env_vars, build_requires, reference])
         builder.builds = filtered_builds
 
+    builder.builds = add_ubitrack_build_options(builder.items)
     builder.run()
