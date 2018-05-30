@@ -57,7 +57,7 @@ def get_os():
 # therefore we're adding new builds that create the needed artefacts
 def add_ubitrack_build_options(items):
     ubitrack_opts = {}
-    ubitrack_opts['Boost: without_atomic'] = True
+    ubitrack_opts['Boost:without_atomic'] = True
     ubitrack_opts['Boost:without_container'] = True
     ubitrack_opts['Boost:without_context'] = True
     ubitrack_opts['Boost:without_coroutine'] = True
