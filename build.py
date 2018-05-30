@@ -53,6 +53,34 @@ def get_os():
     return platform.system().replace("Darwin", "Macos")
 
 
+# for ubitrack we want a stripped down version of boost
+# therefore we're adding new builds that create the needed artefacts
+def add_ubitrack_build_options(items):
+    ubitrack_opts = {}
+    ubitrack_opts['Boost: without_atomic'] = True
+    ubitrack_opts['Boost:without_container'] = True
+    ubitrack_opts['Boost:without_context'] = True
+    ubitrack_opts['Boost:without_coroutine'] = True
+    ubitrack_opts['Boost:without_coroutine2'] = True
+    ubitrack_opts['Boost:without_exception'] = True
+    ubitrack_opts['Boost:without_graph'] = True
+    ubitrack_opts['Boost:without_graph_parallel'] = True
+    ubitrack_opts['Boost:without_locale'] = True
+    ubitrack_opts['Boost:without_log'] = True
+    ubitrack_opts['Boost:without_mpi'] = True
+    ubitrack_opts['Boost:without_signals'] = True
+    ubitrack_opts['Boost:without_timer'] = True
+    ubitrack_opts['Boost:without_wave'] = True
+    builds = items[:]
+    for settings, options, env_vars, build_requires, reference in items:
+        # add config for ubitrack
+        options_extended = options.copy()
+        options_extended.update(ubitrack_opts)
+        builds.append([settings, options_extended, env_vars, build_requires, reference])
+    return builds
+
+
+
 if __name__ == "__main__":
     name = get_name_from_recipe()
     username, channel, version = get_env_vars()
