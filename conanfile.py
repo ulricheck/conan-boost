@@ -120,7 +120,7 @@ class BoostConan(ConanFile):
 
         if not self.options.without_iostreams and not self.options.header_only:
             # if self.settings.os == "Linux" or self.settings.os == "Macos":
-            #     self.requires("bzip2/1.0.6@ulricheck/stable")
+            #     self.requires("bzip2/1.0.6@camposs/stable")
             #     self.options["bzip2"].shared = self.options.shared
             self.requires("zlib/1.2.11@camposs/stable")
             self.options["zlib"].shared = self.options.shared
@@ -129,6 +129,7 @@ class BoostConan(ConanFile):
         if not self.options.without_python:
             if os_info.is_linux:
                 if os_info.with_apt:
+                    # @Todo This should not be done here !!! conan should not install system packages ..
                     installer = SystemPackageTool()
                     if self.settings.arch == "x86" and tools.detected_architecture() == "x86_64":
                         arch_suffix = ':i386'
