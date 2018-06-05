@@ -352,7 +352,7 @@ class BoostConan(ConanFile):
 
     def package_info(self):
 
-        gen_libs = tools.collect_libs(self)
+        gen_libs = list(set(tools.collect_libs(self))) # remove duplicates from list
 
         # List of lists, so if more than one matches the lib like serialization and wserialization
         # both will be added to the list
