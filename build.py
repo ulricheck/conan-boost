@@ -23,7 +23,7 @@ def get_version_from_recipe():
 
 
 def get_default_vars():
-    username = os.getenv("CONAN_USERNAME", "ulricheck")
+    username = os.getenv("CONAN_USERNAME", "camposs")
     channel = os.getenv("CONAN_CHANNEL", "stable")
     version = get_version_from_recipe()
     return username, channel, version
