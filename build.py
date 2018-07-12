@@ -23,7 +23,7 @@ def get_version_from_recipe():
 
 
 def get_default_vars():
-    username = os.getenv("CONAN_USERNAME", "ulricheck")
+    username = os.getenv("CONAN_USERNAME", "camposs")
     channel = os.getenv("CONAN_CHANNEL", "stable")
     version = get_version_from_recipe()
     return username, channel, version
@@ -53,6 +53,36 @@ def get_os():
     return platform.system().replace("Darwin", "Macos")
 
 
+# for ubitrack we want a stripped down version of boost
+# therefore we're adding new builds that create the needed artefacts
+def add_ubitrack_build_options(items):
+    ubitrack_opts = {}
+    ubitrack_opts['Boost:without_atomic'] = True
+    ubitrack_opts['Boost:without_container'] = True
+    ubitrack_opts['Boost:without_context'] = True
+    ubitrack_opts['Boost:without_coroutine'] = True
+    ubitrack_opts['Boost:without_coroutine2'] = True
+    ubitrack_opts['Boost:without_exception'] = True
+    ubitrack_opts['Boost:without_graph'] = True
+    ubitrack_opts['Boost:without_graph_parallel'] = True
+    ubitrack_opts['Boost:without_locale'] = True
+    ubitrack_opts['Boost:without_log'] = True
+    ubitrack_opts['Boost:without_mpi'] = True
+    ubitrack_opts['Boost:without_signals'] = True
+    ubitrack_opts['Boost:without_timer'] = True
+    ubitrack_opts['Boost:without_wave'] = True
+    builds = items[:]
+    for settings, options, env_vars, build_requires, reference in items:
+        # add config for ubitrack
+        options_extended = options.copy()
+        options_extended.update(ubitrack_opts)
+        builds.append([settings, options_extended, env_vars, build_requires, reference])
+    return builds
+
+
+
+
+
 if __name__ == "__main__":
     name = get_name_from_recipe()
     username, channel, version = get_env_vars()
@@ -63,13 +93,14 @@ if __name__ == "__main__":
         upload_only_when_stable=True,
         stable_branch_pattern="stable/*")
 
-    builder.add_common_builds(shared_option_name=name + ":shared")
+    builder.add_common_builds(shared_option_name=name + ":shared", pure_c=False)
 
     if platform.system() == "Windows":
         filtered_builds = []
-        for settings, options, env_vars, build_requires in builder.builds:
+        for settings, options, env_vars, build_requires, reference in builder.items:
             if settings["compiler"] != "Visual Studio" or options[name + ":shared"]:
-                filtered_builds.append([settings, options, env_vars, build_requires])
+                filtered_builds.append([settings, options, env_vars, build_requires, reference])
         builder.builds = filtered_builds
 
+    builder.builds = add_ubitrack_build_options(builder.items)
     builder.run()
