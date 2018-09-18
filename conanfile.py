@@ -32,7 +32,7 @@ class BoostConan(ConanFile):
     default_options = ["shared=False",
         "header_only=False",
         "fPIC=False",
-        "skip_lib_rename=False",
+        "skip_lib_rename=True",
         "magic_autolink=False",
         ]
     default_options.extend(["without_%s=False" % libname for libname in lib_list if libname != "python"])
