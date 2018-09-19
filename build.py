@@ -61,7 +61,7 @@ def add_ubitrack_build_options(items):
     ubitrack_opts['Boost:without_container'] = True
     ubitrack_opts['Boost:without_context'] = True
     ubitrack_opts['Boost:without_coroutine'] = True
-    ubitrack_opts['Boost:without_coroutine2'] = True
+    # ubitrack_opts['Boost:without_coroutine2'] = True
     ubitrack_opts['Boost:without_exception'] = True
     ubitrack_opts['Boost:without_graph'] = True
     ubitrack_opts['Boost:without_graph_parallel'] = True
