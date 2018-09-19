@@ -124,6 +124,8 @@ class BoostConan(ConanFile):
         if not self.options.without_python:
             tools.patch(base_path=os.path.join(self.build_folder, self.folder_name), patch_file='patches/python_base_prefix.patch', strip=1)
 
+        tools.patch(base_path=os.path.join(self.build_folder, self.folder_name), patch_file='patches/vs2017_support.patch', strip=1)
+
         b2_exe = self.bootstrap()
         flags = self.get_build_flags()
         # Help locating bzip2 and zlib
