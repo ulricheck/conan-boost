@@ -35,8 +35,9 @@ class BoostConan(ConanFile):
         "skip_lib_rename=True",
         "magic_autolink=False",
         ]
-    default_options.extend(["without_%s=False" % libname for libname in lib_list if libname != "python"])
+    default_options.extend(["without_%s=False" % libname for libname in lib_list if (libname != "python" or libname != "fiber")])
     default_options.append("without_python=True")
+    default_options.append("without_fiber=True")
     default_options = tuple(default_options)
 
     url="https://github.com/ulricheck/conan-boost"
