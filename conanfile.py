@@ -125,7 +125,8 @@ class BoostConan(ConanFile):
             tools.patch(base_path=os.path.join(self.build_folder, self.folder_name), patch_file='patches/python_base_prefix.patch', strip=1)
 
         if self.settings.compiler == "Visual Studio":
-            tools.replace_in_file("boost/config/compiler/visualc.hpp", "#if (_MSC_VER > 1910)", '''#if (_MSC_VER > 1915)''')
+            tools.replace_in_file(os.path.join(self.source_folder, self.folder_name, "boost/config/compiler/visualc.hpp"), 
+                "#if (_MSC_VER > 1910)", '''#if (_MSC_VER > 1915)''')
 
         b2_exe = self.bootstrap()
         flags = self.get_build_flags()
