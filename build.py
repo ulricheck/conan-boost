@@ -57,20 +57,40 @@ def get_os():
 # therefore we're adding new builds that create the needed artefacts
 def add_ubitrack_build_options(items):
     ubitrack_opts = {}
+    ubitrack_opts['Boost:fPIC'] = False
+    ubitrack_opts['Boost:header_only'] = False
+    ubitrack_opts['Boost:magic_autolink'] = False
+    ubitrack_opts['Boost:skip_lib_rename'] = True
     ubitrack_opts['Boost:without_atomic'] = True
+    ubitrack_opts['Boost:without_chrono'] = False
     ubitrack_opts['Boost:without_container'] = True
     ubitrack_opts['Boost:without_context'] = True
     ubitrack_opts['Boost:without_coroutine'] = True
-    # ubitrack_opts['Boost:without_coroutine2'] = True
+    ubitrack_opts['Boost:without_date_time'] = False
     ubitrack_opts['Boost:without_exception'] = True
+    ubitrack_opts['Boost:without_fiber'] = True
+    ubitrack_opts['Boost:without_filesystem'] = False
     ubitrack_opts['Boost:without_graph'] = True
     ubitrack_opts['Boost:without_graph_parallel'] = True
+    ubitrack_opts['Boost:without_iostreams'] = False
     ubitrack_opts['Boost:without_locale'] = True
     ubitrack_opts['Boost:without_log'] = True
+    ubitrack_opts['Boost:without_math'] = False
     ubitrack_opts['Boost:without_mpi'] = True
+    ubitrack_opts['Boost:without_program_options'] = False
+    ubitrack_opts['Boost:without_python'] = True
+    ubitrack_opts['Boost:without_random'] = False
+    ubitrack_opts['Boost:without_regex'] = False
+    ubitrack_opts['Boost:without_serialization'] = False
     ubitrack_opts['Boost:without_signals'] = True
+    ubitrack_opts['Boost:without_stacktrace'] = False
+    ubitrack_opts['Boost:without_system'] = False
+    ubitrack_opts['Boost:without_test'] = False
+    ubitrack_opts['Boost:without_thread'] = False
     ubitrack_opts['Boost:without_timer'] = True
+    ubitrack_opts['Boost:without_type_erasure'] = False
     ubitrack_opts['Boost:without_wave'] = True
+
     builds = items[:]
     for settings, options, env_vars, build_requires, reference in items:
         # add config for ubitrack
