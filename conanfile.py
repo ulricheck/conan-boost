@@ -115,7 +115,12 @@ class BoostConan(ConanFile):
             # if self.settings.os == "Linux" or self.settings.os == "Macos":
             #     self.requires("bzip2/1.0.6@ulricheck/stable")
             #     self.options["bzip2"].shared = self.options.shared
-            self.requires("zlib/1.2.11@camposs/stable")
+
+            # this is a hack !!
+            if not getattr(self, "_zlib_dependency_added", False):
+                self.requires("zlib/1.2.11@camposs/stable")
+                self._zlib_dependency_added = True
+
             self.options["zlib"].shared = self.options.shared
 
     def system_requirements(self):
@@ -294,12 +299,12 @@ class BoostConan(ConanFile):
         self.output.warn("Patching project-config.jam")
         self.configure()
         contents = "\nusing zlib : %s : <include>%s <search>%s ;" % (
-            self.requires["zlib"].conan_reference.version,
+            self.requires["zlib"].ref.version,
             self.deps_cpp_info["zlib"].include_paths[0].replace('\\', '/'),
             self.deps_cpp_info["zlib"].lib_paths[0].replace('\\', '/'))
         # if self.settings.os == "Linux" or self.settings.os == "Macos":
         #     contents += "\nusing bzip2 : %s : <include>%s <search>%s ;" % (
-        #         self.requires["bzip2"].conan_reference.version,
+        #         self.requires["bzip2"].ref.version,
         #         self.deps_cpp_info["bzip2"].include_paths[0].replace('\\', '/'),
         #         self.deps_cpp_info["bzip2"].lib_paths[0].replace('\\', '/'))
 
