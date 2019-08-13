@@ -15,7 +15,7 @@ lib_list = ['math', 'wave', 'container', 'exception', 'graph', 'iostreams', 'loc
 
 class BoostConan(ConanFile):
     name = "Boost"
-    version = "1.64.0"
+    version = "1.70.0"
     settings = "os", "arch", "compiler", "build_type"
     folder_name = "boost_%s" % version.replace(".", "_")
     # The current python option requires the package to be built locally, to find default Python
@@ -121,6 +121,17 @@ class BoostConan(ConanFile):
         if self.options.header_only:
             self.output.warn("Header only package, skipping build")
             return
+
+        # fix for change to boost quaternion (made members private, but we want to subclass it and access it's members)
+        # somehow this patch does not work :(((
+        # tools.patch(base_path=os.path.join(self.build_folder, self.folder_name), patch_file='patches/quaternion_make_members_protected.patch', strip=1)
+
+        # for now just replace the hopefully unique string in this file ..
+        tools.replace_in_file(os.path.join(self.build_folder, self.folder_name, "boost", "math", "quaternion.hpp"), 
+            """        private:
+           T a, b, c, d;""",
+            """        protected:
+           T a, b, c, d;""")
 
         if not self.options.without_python:
             tools.patch(base_path=os.path.join(self.build_folder, self.folder_name), patch_file='patches/python_base_prefix.patch', strip=1)

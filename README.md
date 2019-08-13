@@ -11,14 +11,14 @@
 
 ### Basic setup
 
-    $ conan install Boost/1.64.0@camposs/stable
+    $ conan install Boost/1.70.0@camposs/stable
 
 ### Project setup
 
 If you handle multiple dependencies in your project is better to add a *conanfile.txt*
 
     [requires]
-    Boost/1.64.0@camposs/stable
+    Boost/1.70.0@camposs/stable
 
     [options]
     Boost:shared=true # false
@@ -46,4 +46,4 @@ The following command both runs all the steps of the conan file, and publishes t
 
 ## Upload
 
-    $ conan upload -r camposs Boost/1.64.0@camposs/stable
+    $ conan upload -r camposs Boost/1.70.0@camposs/stable

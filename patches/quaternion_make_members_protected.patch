@@ -1,0 +1,12 @@
+diff -ru a/boost/math/quaternion.hpp b/boost/math/quaternion.hpp
+--- a/boost/math/quaternion.hpp	2019-04-09 21:36:00.000000000 +0200
++++ b/boost/math/quaternion.hpp	2019-08-13 11:35:39.000000000 +0200
+@@ -434,7 +434,7 @@
+                 swap(result);
+                 return(*this);
+             }
+-        private:
++        protected:
+            T a, b, c, d;
+
+         };
