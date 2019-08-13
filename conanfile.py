@@ -10,7 +10,7 @@ from io import StringIO
 lib_list = ['math', 'wave', 'container', 'exception', 'graph', 'iostreams', 'locale', 'log',
             'program_options', 'random', 'regex', 'mpi', 'serialization', 'signals',
             'coroutine', 'fiber', 'context', 'timer', 'thread', 'chrono', 'date_time',
-            'atomic', 'filesystem', 'system', 'graph_parallel', 'python', 'python3',
+            'atomic', 'filesystem', 'system', 'graph_parallel', 'python',
             'stacktrace', 'test', 'type_erasure']
 
 class BoostConan(ConanFile):
@@ -37,7 +37,6 @@ class BoostConan(ConanFile):
         ]
     default_options.extend(["without_%s=False" % libname for libname in lib_list if (libname != "python" or libname != "fiber")])
     default_options.append("without_python=True")
-    default_options.append("without_python3=True")
     default_options.append("without_fiber=True")
     default_options = tuple(default_options)
 
@@ -137,9 +136,9 @@ class BoostConan(ConanFile):
         if not self.options.without_python:
             tools.patch(base_path=os.path.join(self.build_folder, self.folder_name), patch_file='patches/python_base_prefix.patch', strip=1)
 
-        if self.settings.compiler == "Visual Studio":
-            tools.replace_in_file(os.path.join(self.source_folder, self.folder_name, "boost/config/compiler/visualc.hpp"), 
-                "#if (_MSC_VER > 1910)", '''#if (_MSC_VER > 1915)''')
+        # if self.settings.compiler == "Visual Studio":
+        #     tools.replace_in_file(os.path.join(self.source_folder, self.folder_name, "boost/config/compiler/visualc.hpp"), 
+        #         "#if (_MSC_VER > 1910)", '''#if (_MSC_VER > 1915)''')
 
         b2_exe = self.bootstrap()
         flags = self.get_build_flags()
@@ -296,7 +295,8 @@ class BoostConan(ConanFile):
             #     self.deps_cpp_info["bzip2"].lib_paths[0].replace('\\', '/'),
             #     self.deps_cpp_info["bzip2"].libs[0])
 
-        contents += "\nusing python : {} : {} ;".format(sys.version[:3], sys.executable.replace('\\', '/'))
+        if not self.settings.without_python:
+            contents += "\nusing python : {} : {} ;".format(sys.version[:3], sys.executable.replace('\\', '/'))
 
         toolset, version, exe = self.get_toolset_version_and_exe()
         exe = compiler_command or exe  # Prioritize CXX
