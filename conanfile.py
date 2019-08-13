@@ -10,7 +10,7 @@ from io import StringIO
 lib_list = ['math', 'wave', 'container', 'exception', 'graph', 'iostreams', 'locale', 'log',
             'program_options', 'random', 'regex', 'mpi', 'serialization', 'signals',
             'coroutine', 'fiber', 'context', 'timer', 'thread', 'chrono', 'date_time',
-            'atomic', 'filesystem', 'system', 'graph_parallel', 'python',
+            'atomic', 'filesystem', 'system', 'graph_parallel', 'python', 'python3',
             'stacktrace', 'test', 'type_erasure']
 
 class BoostConan(ConanFile):
@@ -37,6 +37,7 @@ class BoostConan(ConanFile):
         ]
     default_options.extend(["without_%s=False" % libname for libname in lib_list if (libname != "python" or libname != "fiber")])
     default_options.append("without_python=True")
+    default_options.append("without_python3=True")
     default_options.append("without_fiber=True")
     default_options = tuple(default_options)
 
