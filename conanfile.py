@@ -133,8 +133,7 @@ class BoostConan(ConanFile):
             """        protected:
            T a, b, c, d;""")
 
-        if not self.options.without_python:
-            tools.patch(base_path=os.path.join(self.build_folder, self.folder_name), patch_file='patches/python_base_prefix.patch', strip=1)
+        tools.patch(base_path=os.path.join(self.build_folder, self.folder_name), patch_file='patches/fix_cond_waitfor_fibers01.patch', strip=1)
 
         # if self.settings.compiler == "Visual Studio":
         #     tools.replace_in_file(os.path.join(self.source_folder, self.folder_name, "boost/config/compiler/visualc.hpp"), 
