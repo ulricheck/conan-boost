@@ -123,7 +123,7 @@ class BoostConan(ConanFile):
             return
 
         if os_info.is_windows:
-            tools.patch(base_path=os.path.join(self.build_folder, self.folder_name), patch_file="patches/fix_pcl_1.11_compiler_error_cuda.diff", strip=1)
+            tools.patch(base_path=os.path.join(self.build_folder, self.folder_name), patch_file="patches/fix_pcl_1.11_compiler_error_cuda.patch", strip=2)
         # fix for change to boost quaternion (made members private, but we want to subclass it and access it's members)
         # somehow this patch does not work :(((
         # tools.patch(base_path=os.path.join(self.build_folder, self.folder_name), patch_file='patches/quaternion_make_members_protected.patch', strip=1)
