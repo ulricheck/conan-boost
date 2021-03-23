@@ -10,16 +10,14 @@ class DefaultNameConan(ConanFile):
     settings = "os", "compiler", "arch", "build_type"
     generators = "cmake"
 
-    def configure(self):
-        if "Boost" in self.options:
-            if self.options["Boost"].header_only:
-                self.settings.clear()
+    # def configure(self):
+    #     if self.options["Boost"].header_only:
+    #         self.settings.clear()
 
     def build(self):
         cmake = CMake(self)
-        if "Boost" in self.options:
-            if self.options["Boost"].header_only:
-                cmake.definitions["HEADER_ONLY"] = "TRUE"
+        if self.options["Boost"].header_only:
+            cmake.definitions["HEADER_ONLY"] = "TRUE"
         # if not self.options["Boost"].without_python:
         #     cmake.definitions["WITH_PYTHON"] = "TRUE"
         cmake.configure()
@@ -32,11 +30,10 @@ class DefaultNameConan(ConanFile):
     def test(self):        
         data_file = os.path.join(self.source_folder, "data.txt")
         self.run("cd bin && .%slambda < %s" % (os.sep, data_file))
-        if "Boost" in self.options:
-            if not self.options["Boost"].header_only:
-                self.run("cd bin && .%sregex_exe < %s" % (os.sep, data_file))
-                # if not self.options["Boost"].without_python:
-                #     os.chdir("bin")
-                #     sys.path.append(".")
-                #     import hello_ext
-                #     hello_ext.greet()
+        if not self.options["Boost"].header_only:
+            self.run("cd bin && .%sregex_exe < %s" % (os.sep, data_file))
+            # if not self.options["Boost"].without_python:
+            #     os.chdir("bin")
+            #     sys.path.append(".")
+            #     import hello_ext
+            #     hello_ext.greet()
