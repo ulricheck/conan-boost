@@ -15,9 +15,11 @@ lib_list = ['math', 'wave', 'container', 'contract', 'exception', 'graph', 'iost
 
 class BoostConan(ConanFile):
     name = "Boost"
-    version = "1.75.0"
+    upstream_version = "1.75.0"
+    package_revision = "-r1"
+    version = "{0}{1}".format(upstream_version, package_revision)
     settings = "os", "arch", "compiler", "build_type"
-    folder_name = "boost_%s" % version.replace(".", "_")
+    folder_name = "boost_%s" % upstream_version.replace(".", "_")
     # The current python option requires the package to be built locally, to find default Python
     # implementation
     options = {
@@ -109,7 +111,7 @@ class BoostConan(ConanFile):
 
     def source(self):
         zip_name = "%s.zip" % self.folder_name if sys.platform == "win32" else "%s.tar.gz" % self.folder_name
-        url = "https://dl.bintray.com/boostorg/release/%s/source/%s" % (self.version, zip_name)
+        url = "https://dl.bintray.com/boostorg/release/%s/source/%s" % (self.upstream_version, zip_name)
         self.output.info("Downloading %s..." % url)
         tools.download(url, zip_name)
         tools.unzip(zip_name)
