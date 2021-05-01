@@ -15,9 +15,11 @@ lib_list = ['math', 'wave', 'container', 'contract', 'exception', 'graph', 'iost
 
 class BoostConan(ConanFile):
     name = "Boost"
-    version = "1.75.0"
+    upstream_version = "1.75.0"
+    package_revision = "-r1"
+    version = "{0}{1}".format(upstream_version, package_revision)
     settings = "os", "arch", "compiler", "build_type"
-    folder_name = "boost_%s" % version.replace(".", "_")
+    folder_name = "boost_%s" % upstream_version.replace(".", "_")
     # The current python option requires the package to be built locally, to find default Python
     # implementation
     options = {
@@ -109,7 +111,7 @@ class BoostConan(ConanFile):
 
     def source(self):
         zip_name = "%s.zip" % self.folder_name if sys.platform == "win32" else "%s.tar.gz" % self.folder_name
-        url = "https://dl.bintray.com/boostorg/release/%s/source/%s" % (self.version, zip_name)
+        url = "https://dl.bintray.com/boostorg/release/%s/source/%s" % (self.upstream_version, zip_name)
         self.output.info("Downloading %s..." % url)
         tools.download(url, zip_name)
         tools.unzip(zip_name)
@@ -333,7 +335,7 @@ class BoostConan(ConanFile):
         compiler = str(self.settings.compiler)
         if self.settings.compiler == "Visual Studio":
             cversion = self.settings.compiler.version
-            _msvc_version = "14.1" if cversion == "15" else "%s.0" % cversion
+            _msvc_version = "14.2" if cversion == "16" else ("14.1" if cversion == "15" else "%s.0" % cversion)
             return "msvc", _msvc_version, ""
         elif compiler == "gcc" and compiler_version[0] >= "5":
             # For GCC >= v5 we only need the major otherwise Boost doesn't find the compiler
@@ -363,7 +365,7 @@ class BoostConan(ConanFile):
     def _get_boostrap_toolset(self):
         if self.settings.os == "Windows" and self.settings.compiler == "Visual Studio":
             comp_ver = self.settings.compiler.version
-            return "vc%s" % ("141" if comp_ver == "15" else comp_ver)
+            return "vc%s" % ("142" if comp_ver == "16" else ("141" if comp_ver == "15" else comp_ver))
 
         with_toolset = {"apple-clang": "darwin"}.get(str(self.settings.compiler),
                                                      str(self.settings.compiler))
